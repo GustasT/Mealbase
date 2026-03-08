@@ -145,6 +145,7 @@ Completed:
 - GitHub SSH authentication configured
 - VS Code Git integration fixed
 - README created
+- Backend and DB now runs in dev container
 
 ---
 

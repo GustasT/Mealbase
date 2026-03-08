@@ -13,6 +13,7 @@ app.get("/health", async () => {
   }
 });
 
+// Registracija
 app.post(
   "/auth/register",
   {
@@ -52,6 +53,68 @@ app.post(
       }
 
       console.error("REGISTER ERROR:", err);
+      app.log.error(err);
+      return reply.status(500).send({
+        ok: false,
+        error: "Internal server error",
+      });
+    }
+  },
+);
+
+// Loginas
+app.post(
+  "/auth/login",
+  {
+    schema: {
+      body: {
+        type: "object",
+        required: ["email", "password"],
+        properties: {
+          email: { type: "string", format: "email" },
+          password: { type: "string", minLength: 6 },
+        },
+      },
+    },
+  },
+  async (request, reply) => {
+    const { email, password } = request.body as {
+      email: string;
+      password: string;
+    };
+
+    const normalizedEmail = email.toLowerCase();
+
+    try {
+      const result = await db.query(
+        "SELECT id, password_hash FROM users WHERE email = $1",
+        [normalizedEmail],
+      );
+
+      const user = result.rows[0];
+
+      if (!user) {
+        return reply.status(401).send({
+          ok: false,
+          error: "Invalid email or password",
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.password_hash,
+      );
+
+      if (!isPasswordValid) {
+        return reply.status(401).send({
+          ok: false,
+          error: "Invalid email or password",
+        });
+      }
+
+      return reply.send({ ok: true, user: { id: user.id, email: user.email } });
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
       app.log.error(err);
       return reply.status(500).send({
         ok: false,

@@ -22,7 +22,7 @@ services:
       - "3001:3001"
     depends_on:
       - db
-    command: bash -c "npm install && npx tsx src/index.ts"
+    command: ["bash", "-lc", "npm install && npx tsx watch src/index.ts"]
 
 volumes:
   postgres_data:

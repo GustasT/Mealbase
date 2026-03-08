@@ -1,0 +1,7 @@
+{
+  "name": "mealbase-api",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose"
+}

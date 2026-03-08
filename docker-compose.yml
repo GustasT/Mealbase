@@ -14,10 +14,10 @@ services:
   api:
     image: node:24-bookworm
     container_name: mealbase-api
-    working_dir: /app
+    working_dir: /workspace/services/api
     volumes:
-      - ./services/api:/app
-      - api_node_modules:/app/node_modules
+      - .:/workspace
+      - api_node_modules:/workspace/services/api/node_modules
     ports:
       - "3001:3001"
     depends_on:

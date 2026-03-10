@@ -1,3 +1,7 @@
+### Health check
+GET http://localhost:3001/health
+
+### Register
 POST http://localhost:3001/auth/register
 Content-Type: application/json
 
@@ -14,6 +18,13 @@ Content-Type: application/json
   "email": "test@mail.com",
   "password": "secret123"
 }
+
+### Profile
+GET http://localhost:3001/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzMxNTUzMTQsImV4cCI6MTc3Mzc2MDExNH0.Si-u74KyUvdGkqErD9WfBSDr2ibO3Am1RybfDqOplt4
+
+### Profile without token
+GET http://localhost:3001/profile
 
 ### Login wrong password
 POST http://localhost:3001/auth/login

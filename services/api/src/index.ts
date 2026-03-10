@@ -1,19 +1,22 @@
 import Fastify from "fastify";
-import { db } from "./db";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { db } from "./db";
+import { authMiddleware, JwtPayload } from "./authMiddleware";
 
 const app = Fastify();
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 app.get("/health", async () => {
   try {
     await db.query("SELECT 1");
     return { ok: true, db: true };
-  } catch (err) {
+  } catch {
     return { ok: true, db: false };
   }
 });
 
-// Registracija
+// Register
 app.post(
   "/auth/register",
   {
@@ -54,6 +57,7 @@ app.post(
 
       console.error("REGISTER ERROR:", err);
       app.log.error(err);
+
       return reply.status(500).send({
         ok: false,
         error: "Internal server error",
@@ -62,7 +66,7 @@ app.post(
   },
 );
 
-// Loginas
+// Login
 app.post(
   "/auth/login",
   {
@@ -87,7 +91,7 @@ app.post(
 
     try {
       const result = await db.query(
-        "SELECT id, password_hash FROM users WHERE email = $1",
+        "SELECT id, email, password_hash FROM users WHERE email = $1",
         [normalizedEmail],
       );
 
@@ -112,10 +116,17 @@ app.post(
         });
       }
 
-      return reply.send({ ok: true, user: { id: user.id, email: user.email } });
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        { expiresIn: "7d" },
+      );
+
+      return reply.send({ ok: true, token });
     } catch (err) {
       console.error("LOGIN ERROR:", err);
       app.log.error(err);
+
       return reply.status(500).send({
         ok: false,
         error: "Internal server error",
@@ -124,9 +135,22 @@ app.post(
   },
 );
 
+// Profile
+app.get("/profile", { preHandler: authMiddleware }, async (request, reply) => {
+  const user = (request as any).user as JwtPayload;
+
+  return reply.send({
+    ok: true,
+    user: {
+      id: user.userId,
+      email: user.email,
+    },
+  });
+});
+
 const start = async () => {
   try {
-    await db.query("SELECT 1"); // test connection
+    await db.query("SELECT 1");
     await app.listen({ port: 3001, host: "0.0.0.0" });
     console.log("Server running on port 3001");
   } catch (err) {

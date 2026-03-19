@@ -6,7 +6,7 @@ POST http://localhost:3001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
+  "email": "test123@mail.com",
   "password": "secret123"
 }
 
@@ -15,13 +15,13 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
+  "email": "test123@mail.com",
   "password": "secret123"
 }
 
 ### Profile
 GET http://localhost:3001/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiYTc5MWYxYi0wZGYyLTQzOGEtYTBkMS1lMjNiYjM3ZDE2NjIiLCJlbWFpbCI6InRlc3QxMjNAbWFpbC5jb20iLCJpYXQiOjE3NzM5NTY1OTUsImV4cCI6MTc3NDU2MTM5NX0.BeC0cqetnjKqnMF2ohz1uaqW7--0s_oIurlMT8noFuw
 
 ### Profile without token
 GET http://localhost:3001/profile
@@ -48,13 +48,13 @@ Content-Type: application/json
 ### Add product
 POST http://localhost:3001/products
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiYTc5MWYxYi0wZGYyLTQzOGEtYTBkMS1lMjNiYjM3ZDE2NjIiLCJlbWFpbCI6InRlc3QxMjNAbWFpbC5jb20iLCJpYXQiOjE3NzM5NTY1OTUsImV4cCI6MTc3NDU2MTM5NX0.BeC0cqetnjKqnMF2ohz1uaqW7--0s_oIurlMT8noFuw
 
 {
-  "name": "Pienas 2",
-  "protein": 6,
-  "carbs": 2.5,
-  "fat": 0.5
+  "name": "Kito naudotojo pienas 2",
+  "protein": 12,
+  "carbs": 3.4,
+  "fat": 0.9
 }
 
 ### Get products
@@ -68,3 +68,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4Y
 ### Delete product by id
 DELETE http://localhost:3001/products/68e5af32-9d47-4a3d-8372-a189d33ffd07
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+
+### Update product by id
+PUT http://localhost:3001/products/8f3d423e-9cc4-40a2-91e5-0efcf8894412
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+
+{
+  "name": "Test",
+  "protein": 66,
+  "carbs": 38,
+  "fat": 0.5
+}

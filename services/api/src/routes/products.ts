@@ -216,4 +216,86 @@ export async function productsRoute(app: FastifyInstance) {
       }
     },
   );
+
+  app.put(
+    "/products/:id",
+    {
+      preHandler: authMiddleware,
+      schema: {
+        body: {
+          type: "object",
+          required: ["name", "protein", "carbs", "fat"],
+          properties: {
+            name: { type: "string", minLength: 1, maxLength: 50 },
+            protein: { type: "number", minimum: 0, maximum: 100 },
+            carbs: { type: "number", minimum: 0, maximum: 100 },
+            fat: { type: "number", minimum: 0, maximum: 100 },
+          },
+        },
+      },
+    },
+
+    async (request, reply) => {
+      const user = (request as any).user as JwtPayload;
+      const { id } = request.params as { id: string };
+
+      const { name, protein, carbs, fat } = request.body as {
+        name: string;
+        protein: number;
+        carbs: number;
+        fat: number;
+      };
+
+      const total = protein + carbs + fat;
+
+      if (total > 103) {
+        return reply.status(400).send({
+          ok: false,
+          error: "Macros sum cannot exceed 103g",
+        });
+      }
+
+      try {
+        const result = await db.query(
+          `
+          UPDATE products
+          SET name = $3, protein = $4, carbs = $5, fat = $6
+          WHERE user_id = $1 AND id = $2
+          RETURNING id, user_id, name, protein, carbs, fat, created_at
+          `,
+          [user.userId, id, name.trim(), protein, carbs, fat],
+        );
+
+        const product = result.rows[0];
+
+        if (!product) {
+          return reply.status(404).send({
+            ok: false,
+          });
+        }
+
+        return reply.status(200).send({
+          ok: true,
+          product: {
+            ...product,
+            calories: Number(
+              (
+                Number(product.protein) * 4 +
+                Number(product.carbs) * 4 +
+                Number(product.fat) * 9
+              ).toFixed(0),
+            ),
+          },
+        });
+      } catch (err) {
+        console.error("UPDATE PRODUCT ERROR:", err);
+        app.log.error(err);
+
+        return reply.status(500).send({
+          ok: false,
+          error: "Internal server error",
+        });
+      }
+    },
+  );
 }

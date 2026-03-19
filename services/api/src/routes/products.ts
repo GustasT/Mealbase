@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db";
 import { authMiddleware, JwtPayload } from "../authMiddleware";
+import { request } from "node:http";
 
 export async function productsRoute(app: FastifyInstance) {
   app.post(
@@ -12,14 +13,15 @@ export async function productsRoute(app: FastifyInstance) {
           type: "object",
           required: ["name", "protein", "carbs", "fat"],
           properties: {
-            name: { type: "string", minLength: 1 },
-            protein: { type: "number", minimum: 0 },
-            carbs: { type: "number", minimum: 0 },
-            fat: { type: "number", minimum: 0 },
+            name: { type: "string", minLength: 1, maxLength: 50 },
+            protein: { type: "number", minimum: 0, maximum: 100 },
+            carbs: { type: "number", minimum: 0, maximum: 100 },
+            fat: { type: "number", minimum: 0, maximum: 100 },
           },
         },
       },
     },
+
     async (request, reply) => {
       const user = (request as any).user as JwtPayload;
 
@@ -29,6 +31,15 @@ export async function productsRoute(app: FastifyInstance) {
         carbs: number;
         fat: number;
       };
+
+      const total = protein + carbs + fat;
+
+      if (total > 103) {
+        return reply.status(400).send({
+          ok: false,
+          error: "Macros sum cannot exceed 103g",
+        });
+      }
 
       try {
         const result = await db.query(
@@ -67,6 +78,7 @@ export async function productsRoute(app: FastifyInstance) {
     },
   );
 
+  // Get products of an user
   app.get(
     "/products",
     { preHandler: authMiddleware },
@@ -101,6 +113,100 @@ export async function productsRoute(app: FastifyInstance) {
         });
       } catch (err) {
         console.error("GET PRODUCTS ERROR:", err);
+        app.log.error(err);
+
+        return reply.status(500).send({
+          ok: false,
+          error: "Internal server error",
+        });
+      }
+    },
+  );
+
+  // Get product by id
+  app.get(
+    "/products/:id",
+    { preHandler: authMiddleware },
+    async (request, reply) => {
+      const user = (request as any).user as JwtPayload;
+      const { id } = request.params as { id: string };
+
+      try {
+        const result = await db.query(
+          `
+          SELECT id, user_id, name, protein, carbs, fat, created_at
+          FROM products
+          WHERE user_id = $1 AND id = $2
+          `,
+          [user.userId, id],
+        );
+
+        const product = result.rows[0];
+
+        if (!product) {
+          return reply.status(404).send({
+            ok: false,
+            error: "Product not found",
+          });
+        }
+
+        return reply.send({
+          ok: true,
+          product: {
+            ...product,
+            calories: Number(
+              (
+                Number(product.protein) * 4 +
+                Number(product.carbs) * 4 +
+                Number(product.fat) * 9
+              ).toFixed(0),
+            ),
+          },
+        });
+      } catch (err) {
+        console.error("GET PRODUCT BY ID ERROR:", err);
+        app.log.error(err);
+
+        return reply.status(500).send({
+          ok: false,
+          error: "Internal server error",
+        });
+      }
+    },
+  );
+
+  // Delete product by id
+  app.delete(
+    "/products/:id",
+    { preHandler: authMiddleware },
+    async (request, reply) => {
+      const user = (request as any).user as JwtPayload;
+      const { id } = request.params as { id: string };
+
+      try {
+        const result = await db.query(
+          `
+          DELETE
+          FROM products
+          WHERE user_id = $1 AND id = $2
+          RETURNING id
+          `,
+          [user.userId, id],
+        );
+
+        const deleted = result.rows[0];
+
+        if (!deleted) {
+          return reply.status(404).send({
+            ok: false,
+            error: "Product not found",
+          });
+        }
+        return reply.send({
+          ok: true,
+        });
+      } catch (err) {
+        console.error("DELETE PRODUCT ERROR:", err);
         app.log.error(err);
 
         return reply.status(500).send({

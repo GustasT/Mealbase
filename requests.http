@@ -51,12 +51,20 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
 
 {
-  "name": "Product 2",
-  "protein": 9.8,
-  "carbs": 20.1,
-  "fat": 5.5
+  "name": "Pienas 2",
+  "protein": 6,
+  "carbs": 2.5,
+  "fat": 0.5
 }
 
 ### Get products
 GET http://localhost:3001/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+
+### Get product by id
+GET http://localhost:3001/products/3ba1e3cc-b949-485f-9bea-12be9af4982a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+
+### Delete product by id
+DELETE http://localhost:3001/products/68e5af32-9d47-4a3d-8372-a189d33ffd07
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI

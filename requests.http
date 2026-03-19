@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ### Profile
 GET http://localhost:3001/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzMxNTUzMTQsImV4cCI6MTc3Mzc2MDExNH0.Si-u74KyUvdGkqErD9WfBSDr2ibO3Am1RybfDqOplt4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
 
 ### Profile without token
 GET http://localhost:3001/profile
@@ -43,3 +43,20 @@ Content-Type: application/json
   "email": "unknown@mail.com",
   "password": "secret123"
 }
+
+
+### Add product
+POST http://localhost:3001/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI
+
+{
+  "name": "Product 2",
+  "protein": 9.8,
+  "carbs": 20.1,
+  "fat": 5.5
+}
+
+### Get products
+GET http://localhost:3001/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzM5MzE5MTIsImV4cCI6MTc3NDUzNjcxMn0.F7CS9D0AQPk0GCC-L_lE7Z4d40oDq1u5Tg28y-8i9dI

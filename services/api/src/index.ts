@@ -1,11 +1,9 @@
 import Fastify from "fastify";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { db } from "./db";
-import { authMiddleware, JwtPayload } from "./authMiddleware";
 import { profileRoute } from "./routes/profile";
 import { authRoute } from "./routes/auth";
 import { productsRoute } from "./routes/products";
+import { mealsRoute } from "./routes/meals";
 
 const app = Fastify();
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -24,6 +22,8 @@ authRoute(app);
 profileRoute(app);
 
 productsRoute(app);
+
+mealsRoute(app);
 
 const start = async () => {
   try {

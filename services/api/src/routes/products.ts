@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db";
 import { authMiddleware, JwtPayload } from "../authMiddleware";
-import { request } from "node:http";
 
 export async function productsRoute(app: FastifyInstance) {
   app.post(

@@ -1,0 +1,211 @@
+import { FastifyInstance } from "fastify";
+import { db } from "../db";
+import { authMiddleware, JwtPayload } from "../authMiddleware";
+
+type MealItemInput = {
+  productId: string;
+  grams: number;
+};
+
+export async function mealsRoute(app: FastifyInstance) {
+  app.post(
+    "/meals",
+    {
+      preHandler: authMiddleware,
+      schema: {
+        body: {
+          type: "object",
+          required: ["name", "servings", "items"],
+          properties: {
+            name: { type: "string", minLength: 1, maxLength: 100 },
+            description: { type: "string", maxLength: 1000 },
+            servings: { type: "integer", minimum: 1, maximum: 100 },
+            items: {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "object",
+                required: ["productId", "grams"],
+                properties: {
+                  productId: { type: "string", minLength: 1 },
+                  grams: {
+                    type: "number",
+                    exclusiveMinimum: 0,
+                    maximum: 9999.9,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const user = (request as any).user as JwtPayload;
+
+      const { name, description, servings, items } = request.body as {
+        name: string;
+        description?: string;
+        servings: number;
+        items: MealItemInput[]; ///////////////////////////////////////
+      };
+
+      const trimmedName = name.trim();
+      const trimmedDescription = description?.trim() || null;
+
+      if (!trimmedName) {
+        return reply.status(400).send({
+          ok: false,
+          error: "Meal name is required",
+        });
+      }
+
+      const productIds = items.map((item) => item.productId);
+      const uniqueProductIds = [...new Set(productIds)];
+
+      if (uniqueProductIds.length !== productIds.length) {
+        return reply.status(400).send({
+          ok: false,
+          error: "Duplicate products are not allowed in the same meal",
+        });
+      }
+
+      const client = await db.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        const productsResult = await client.query(
+          `
+          SELECT id, name, protein, carbs, fat
+          FROM products
+          WHERE user_id = $1 AND id = ANY($2::uuid[])
+          `,
+          [user.userId, uniqueProductIds],
+        );
+
+        if (productsResult.rows.length !== uniqueProductIds.length) {
+          await client.query("ROLLBACK");
+          return reply.status(404).send({
+            ok: false,
+            error: "One or more products were not found",
+          });
+        }
+
+        ///// issaugom viska mape pagal id kad nereiketu kiekviena karta eiti per masyva ieskant produkto
+        const productsMap = new Map(
+          productsResult.rows.map((product) => [product.id, product]),
+        );
+        ///
+
+        const mealResult = await client.query(
+          `
+          INSERT INTO meals (user_id, name, description, servings)
+          VALUES ($1, $2, $3, $4)
+          RETURNING id, user_id, name, description, servings, created_at
+          `,
+          [user.userId, trimmedName, trimmedDescription, servings],
+        );
+
+        const meal = mealResult.rows[0];
+
+        for (const item of items) {
+          await client.query(
+            `
+            INSERT INTO meal_products (meal_id, product_id, grams)
+            VALUES ($1, $2, $3)
+            `,
+            [meal.id, item.productId, item.grams],
+          );
+        }
+
+        let totalProtein = 0;
+        let totalCarbs = 0;
+        let totalFat = 0;
+
+        const responseItems = items.map((item) => {
+          const product = productsMap.get(item.productId)!;
+
+          const protein = Number(
+            ((Number(product.protein) * item.grams) / 100).toFixed(1),
+          );
+          const carbs = Number(
+            ((Number(product.carbs) * item.grams) / 100).toFixed(1),
+          );
+          const fat = Number(
+            ((Number(product.fat) * item.grams) / 100).toFixed(1),
+          );
+          const calories = Number(
+            (protein * 4 + carbs * 4 + fat * 9).toFixed(0),
+          );
+
+          totalProtein += protein;
+          totalCarbs += carbs;
+          totalFat += fat;
+
+          return {
+            productId: item.productId,
+            name: product.name,
+            grams: item.grams,
+            protein,
+            carbs,
+            fat,
+            calories,
+          };
+        });
+
+        totalProtein = Number(totalProtein.toFixed(1));
+        totalCarbs = Number(totalCarbs.toFixed(1));
+        totalFat = Number(totalFat.toFixed(1));
+
+        const totalCalories = Number(
+          (totalProtein * 4 + totalCarbs * 4 + totalFat * 9).toFixed(0),
+        );
+
+        const perServingProtein = Number((totalProtein / servings).toFixed(1));
+        const perServingCarbs = Number((totalCarbs / servings).toFixed(1));
+        const perServingFat = Number((totalFat / servings).toFixed(1));
+        const perServingCalories = Number(
+          (
+            perServingProtein * 4 +
+            perServingCarbs * 4 +
+            perServingFat * 9
+          ).toFixed(0),
+        );
+
+        await client.query("COMMIT");
+
+        return reply.status(201).send({
+          ok: true,
+          meal: {
+            ...meal,
+            items: responseItems,
+            total: {
+              protein: totalProtein,
+              carbs: totalCarbs,
+              fat: totalFat,
+              calories: totalCalories,
+            },
+            perServing: {
+              protein: perServingProtein,
+              carbs: perServingCarbs,
+              fat: perServingFat,
+              calories: perServingCalories,
+            },
+          },
+        });
+      } catch (err) {
+        await client.query("ROLLBACK");
+        console.error("CREATE MEAL ERROR:", err);
+        app.log.error(err);
+
+        return reply.status(500).send({
+          ok: false,
+          error: "Internal server error",
+        });
+      } finally {
+        client.release();
+      }
+    },
+  );
+}

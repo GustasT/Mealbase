@@ -92,3 +92,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhM
   "servings" : 3,
   "items": [{"productId": "560e2ee6-dbf5-493f-88fc-215ffd83b9f0", "grams":500},{"productId": "06fd17c4-a781-4ce9-92e0-2f922eada8b7", "grams": 400}]
 }
+
+### Get meals
+GET http://localhost:3001/meals
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhMzFjMC01MDhmLTRmYWEtOTI0MC1iN2JiMzQ4NGU0NzciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NDI2OTk3NywiZXhwIjoxNzc0ODc0Nzc3fQ.i0kdDWv3FOLabPS7lD-Exd9VopOIYLqOnGOSBcWVS60
+
+### Get meal by id
+GET http://localhost:3001/meals/1a7df28a-4985-47fb-be14-b6c8e1a1dba5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhMzFjMC01MDhmLTRmYWEtOTI0MC1iN2JiMzQ4NGU0NzciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NDI2OTk3NywiZXhwIjoxNzc0ODc0Nzc3fQ.i0kdDWv3FOLabPS7lD-Exd9VopOIYLqOnGOSBcWVS60
+

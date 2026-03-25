@@ -1,6 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db";
 import { authMiddleware, JwtPayload } from "../authMiddleware";
+import {
+  normalizeMealRow,
+  normalizeMealItemRow,
+  normalizeMealProductRow,
+  NormalizedMealItem,
+} from "../utils/mealsNormalization";
 
 type MealItemInput = {
   productId: string;
@@ -75,7 +81,7 @@ export async function mealsRoute(app: FastifyInstance) {
       try {
         await client.query("BEGIN");
 
-        const productsResult = await client.query(
+        const rawProductsResult = await client.query(
           `
           SELECT id, name, protein, carbs, fat
           FROM products
@@ -84,7 +90,9 @@ export async function mealsRoute(app: FastifyInstance) {
           [user.userId, uniqueProductIds],
         );
 
-        if (productsResult.rows.length !== uniqueProductIds.length) {
+        const products = rawProductsResult.rows.map(normalizeMealProductRow);
+
+        if (products.length !== uniqueProductIds.length) {
           await client.query("ROLLBACK");
           return reply.status(404).send({
             ok: false,
@@ -94,7 +102,7 @@ export async function mealsRoute(app: FastifyInstance) {
 
         ///// issaugom viska mape pagal id kad nereiketu kiekviena karta eiti per masyva ieskant produkto
         const productsMap = new Map(
-          productsResult.rows.map((product) => [product.id, product]),
+          products.map((product) => [product.id, product]),
         );
         ///
 
@@ -107,7 +115,9 @@ export async function mealsRoute(app: FastifyInstance) {
           [user.userId, trimmedName, trimmedDescription, servings],
         );
 
-        const meal = mealResult.rows[0];
+        const rawMeal = mealResult.rows[0];
+
+        const meal = normalizeMealRow(rawMeal);
 
         for (const item of items) {
           await client.query(
@@ -127,14 +137,10 @@ export async function mealsRoute(app: FastifyInstance) {
           const product = productsMap.get(item.productId)!;
 
           const protein = Number(
-            ((Number(product.protein) * item.grams) / 100).toFixed(1),
+            ((product.protein * item.grams) / 100).toFixed(1),
           );
-          const carbs = Number(
-            ((Number(product.carbs) * item.grams) / 100).toFixed(1),
-          );
-          const fat = Number(
-            ((Number(product.fat) * item.grams) / 100).toFixed(1),
-          );
+          const carbs = Number(((product.carbs * item.grams) / 100).toFixed(1));
+          const fat = Number(((product.fat * item.grams) / 100).toFixed(1));
           const calories = Number(
             (protein * 4 + carbs * 4 + fat * 9).toFixed(0),
           );
@@ -175,24 +181,26 @@ export async function mealsRoute(app: FastifyInstance) {
 
         await client.query("COMMIT");
 
+        const mealResponse = {
+          ...meal,
+          items: responseItems,
+          total: {
+            protein: totalProtein,
+            carbs: totalCarbs,
+            fat: totalFat,
+            calories: totalCalories,
+          },
+          perServing: {
+            protein: perServingProtein,
+            carbs: perServingCarbs,
+            fat: perServingFat,
+            calories: perServingCalories,
+          },
+        };
+
         return reply.status(201).send({
           ok: true,
-          meal: {
-            ...meal,
-            items: responseItems,
-            total: {
-              protein: totalProtein,
-              carbs: totalCarbs,
-              fat: totalFat,
-              calories: totalCalories,
-            },
-            perServing: {
-              protein: perServingProtein,
-              carbs: perServingCarbs,
-              fat: perServingFat,
-              calories: perServingCalories,
-            },
-          },
+          meal: mealResponse,
         });
       } catch (err) {
         await client.query("ROLLBACK");
@@ -215,7 +223,7 @@ export async function mealsRoute(app: FastifyInstance) {
     const user = (request as any).user as JwtPayload;
 
     try {
-      const mealsResult = await db.query(
+      const rawMealsResult = await db.query(
         `
         SELECT id, user_id, name, description, servings, created_at
         FROM meals
@@ -225,7 +233,7 @@ export async function mealsRoute(app: FastifyInstance) {
         [user.userId],
       );
 
-      const meals = mealsResult.rows;
+      const meals = rawMealsResult.rows.map(normalizeMealRow);
 
       if (meals.length === 0) {
         return reply.send({
@@ -236,7 +244,7 @@ export async function mealsRoute(app: FastifyInstance) {
 
       const mealIds = meals.map((meal) => meal.id);
 
-      const itemsResult = await db.query(
+      const rawItemsResult = await db.query(
         `
         SELECT
           mp.meal_id,
@@ -253,17 +261,19 @@ export async function mealsRoute(app: FastifyInstance) {
         [mealIds],
       );
 
-      const itemsByMealId = new Map<string, any[]>();
+      const items = rawItemsResult.rows.map(normalizeMealItemRow);
 
-      for (const item of itemsResult.rows) {
-        if (!itemsByMealId.has(item.meal_id)) {
-          itemsByMealId.set(item.meal_id, []);
+      const itemsByMealId = new Map<string, NormalizedMealItem[]>();
+
+      for (const item of items) {
+        if (!itemsByMealId.has(item.mealId)) {
+          itemsByMealId.set(item.mealId, []);
         }
 
-        itemsByMealId.get(item.meal_id)!.push(item);
+        itemsByMealId.get(item.mealId)!.push(item);
       }
 
-      const responseMeals = meals.map((meal) => {
+      const mealsResponse = meals.map((meal) => {
         const items = itemsByMealId.get(meal.id) || [];
 
         let totalProtein = 0;
@@ -273,14 +283,10 @@ export async function mealsRoute(app: FastifyInstance) {
 
         const responseItems = items.map((item) => {
           const protein = Number(
-            ((Number(item.protein) * Number(item.grams)) / 100).toFixed(1),
+            ((item.protein * item.grams) / 100).toFixed(1),
           );
-          const carbs = Number(
-            ((Number(item.carbs) * Number(item.grams)) / 100).toFixed(1),
-          );
-          const fat = Number(
-            ((Number(item.fat) * Number(item.grams)) / 100).toFixed(1),
-          );
+          const carbs = Number(((item.carbs * item.grams) / 100).toFixed(1));
+          const fat = Number(((item.fat * item.grams) / 100).toFixed(1));
           const calories = Number(
             (protein * 4 + carbs * 4 + fat * 9).toFixed(0),
           );
@@ -291,9 +297,9 @@ export async function mealsRoute(app: FastifyInstance) {
           totalCalories += calories;
 
           return {
-            productId: item.product_id,
+            productId: item.productId,
             name: item.name,
-            grams: Number(item.grams),
+            grams: item.grams,
             protein,
             carbs,
             fat,
@@ -338,7 +344,7 @@ export async function mealsRoute(app: FastifyInstance) {
 
       return reply.send({
         ok: true,
-        meals: responseMeals,
+        meals: mealsResponse,
       });
     } catch (err) {
       console.error("GET MEALS ERROR:", err);
@@ -361,7 +367,7 @@ export async function mealsRoute(app: FastifyInstance) {
       const { id } = request.params as { id: string };
 
       try {
-        const result = await db.query(
+        const rawMealResult = await db.query(
           `
         SELECT id, user_id, name, description, servings, created_at
         FROM meals
@@ -370,16 +376,18 @@ export async function mealsRoute(app: FastifyInstance) {
           [user.userId, id],
         );
 
-        const meal = result.rows[0];
+        const rawMeal = rawMealResult.rows[0];
 
-        if (!meal) {
+        if (!rawMeal) {
           return reply.status(404).send({
             ok: false,
             error: "Meal not found",
           });
         }
 
-        const itemsResult = await db.query(
+        const meal = normalizeMealRow(rawMeal);
+
+        const rawItemsResult = await db.query(
           `
           SELECT
           mp.product_id,
@@ -395,23 +403,19 @@ export async function mealsRoute(app: FastifyInstance) {
           [meal.id],
         );
 
-        const items = itemsResult.rows;
+        const itemsResult = rawItemsResult.rows.map(normalizeMealItemRow);
 
         let totalProtein = 0;
         let totalCarbs = 0;
         let totalFat = 0;
         let totalCalories = 0;
 
-        const responseItems = items.map((item) => {
+        const responseItems = itemsResult.map((item) => {
           const protein = Number(
-            ((Number(item.protein) * Number(item.grams)) / 100).toFixed(1),
+            ((item.protein * item.grams) / 100).toFixed(1),
           );
-          const carbs = Number(
-            ((Number(item.carbs) * Number(item.grams)) / 100).toFixed(1),
-          );
-          const fat = Number(
-            ((Number(item.fat) * Number(item.grams)) / 100).toFixed(1),
-          );
+          const carbs = Number(((item.carbs * item.grams) / 100).toFixed(1));
+          const fat = Number(((item.fat * item.grams) / 100).toFixed(1));
           const calories = Number(
             (protein * 4 + carbs * 4 + fat * 9).toFixed(0),
           );
@@ -422,9 +426,9 @@ export async function mealsRoute(app: FastifyInstance) {
           totalCalories += calories;
 
           return {
-            productId: item.product_id,
+            productId: item.productId,
             name: item.name,
-            grams: Number(item.grams),
+            grams: item.grams,
             protein: protein,
             carbs: carbs,
             fat: fat,
@@ -433,36 +437,34 @@ export async function mealsRoute(app: FastifyInstance) {
         });
 
         const perServingProtein = Number(
-          (totalProtein / Number(meal.servings)).toFixed(1),
+          (totalProtein / meal.servings).toFixed(1),
         );
-        const perServingCarbs = Number(
-          (totalCarbs / Number(meal.servings)).toFixed(1),
-        );
-        const perServingFat = Number(
-          (totalFat / Number(meal.servings)).toFixed(1),
-        );
+        const perServingCarbs = Number((totalCarbs / meal.servings).toFixed(1));
+        const perServingFat = Number((totalFat / meal.servings).toFixed(1));
         const perServingCalories = Number(
-          (totalCalories / Number(meal.servings)).toFixed(0),
+          (totalCalories / meal.servings).toFixed(0),
         );
+
+        const mealResponse = {
+          ...meal,
+          items: responseItems,
+          total: {
+            protein: totalProtein,
+            carbs: totalCarbs,
+            fat: totalFat,
+            calories: totalCalories,
+          },
+          perServing: {
+            protein: perServingProtein,
+            carbs: perServingCarbs,
+            fat: perServingFat,
+            calories: perServingCalories,
+          },
+        };
 
         return reply.status(200).send({
           ok: true,
-          meal: {
-            ...meal,
-            items: responseItems,
-            total: {
-              protein: totalProtein,
-              carbs: totalCarbs,
-              fat: totalFat,
-              calories: totalCalories,
-            },
-            perServing: {
-              protein: perServingProtein,
-              carbs: perServingCarbs,
-              fat: perServingFat,
-              calories: perServingCalories,
-            },
-          },
+          meal: mealResponse,
         });
       } catch (err) {
         console.error("GET MEAL ERROR:", err);

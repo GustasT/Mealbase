@@ -51,10 +51,10 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhMzFjMC01MDhmLTRmYWEtOTI0MC1iN2JiMzQ4NGU0NzciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NDI2OTk3NywiZXhwIjoxNzc0ODc0Nzc3fQ.i0kdDWv3FOLabPS7lD-Exd9VopOIYLqOnGOSBcWVS60
 
 {
-  "name": "Jautieno farsas",
-  "protein": 24,
-  "carbs": 2,
-  "fat": 15
+  "name": "Duona",
+  "protein": 6,
+  "carbs": 32,
+  "fat": 3
 }
 
 ### Get products
@@ -87,10 +87,10 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhMzFjMC01MDhmLTRmYWEtOTI0MC1iN2JiMzQ4NGU0NzciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NDI2OTk3NywiZXhwIjoxNzc0ODc0Nzc3fQ.i0kdDWv3FOLabPS7lD-Exd9VopOIYLqOnGOSBcWVS60
 
 {
-  "name": "Makaronai su farsu",
-  "description": "Uzvirti vandeni, imetus makaronus uzdeti timeri 9min ir pradeti kepti farsa",
-  "servings" : 3,
-  "items": [{"productId": "560e2ee6-dbf5-493f-88fc-215ffd83b9f0", "grams":500},{"productId": "06fd17c4-a781-4ce9-92e0-2f922eada8b7", "grams": 400}]
+  "name": "Gaidienos sumustinis",
+  "description": "Atpjauti gabaliuka gaidienos ir uzdeti ant duonos riekes",
+  "servings" : 1,
+  "items": [{"productId": "cabeec51-79e0-4aad-8b5c-8e123bf6fc47", "grams":100},{"productId": "c05b3c91-13ab-4e4e-9780-fdb3652e3796", "grams": 150}]
 }
 
 ### Get meals

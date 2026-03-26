@@ -7,6 +7,7 @@ import {
   normalizeMealProductRow,
   NormalizedMealItem,
 } from "../utils/mealsNormalization";
+import { request } from "node:http";
 
 type MealItemInput = {
   productId: string;
@@ -468,6 +469,51 @@ export async function mealsRoute(app: FastifyInstance) {
         });
       } catch (err) {
         console.error("GET MEAL ERROR:", err);
+        app.log.error(err);
+
+        return reply.status(500).send({
+          ok: false,
+          error: "Internal server error",
+        });
+      }
+    },
+  );
+
+  /// Delete meal by id
+  app.delete(
+    "/meals/:id",
+    { preHandler: authMiddleware },
+    async (request, reply) => {
+      const user = (request as any).user as JwtPayload;
+      const { id } = request.params as { id: string };
+
+      try {
+        const rawDeleteResult = await db.query(
+          `
+        DELETE FROM meals
+        WHERE
+        meals.id = $1 AND user_id = $2
+        RETURNING 
+        id
+        `,
+          [id, user.userId],
+        );
+
+        const deleteResult = rawDeleteResult.rows[0];
+        console.log(deleteResult);
+
+        if (!deleteResult) {
+          return reply.status(404).send({
+            ok: false,
+            error: "Meal not found",
+          });
+        }
+
+        return reply.status(200).send({
+          ok: true,
+        });
+      } catch (err) {
+        console.error("DELETE MEAL ERROR:", err);
         app.log.error(err);
 
         return reply.status(500).send({

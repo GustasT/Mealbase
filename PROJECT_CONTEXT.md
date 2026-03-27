@@ -6,10 +6,10 @@ Mealbase is a mobile application for tracking meals and nutritional values.
 
 Users can:
 
-- scan food labels
 - store food products with macros (per 100g)
-- build dishes from stored products
-- automatically calculate dish macros
+- build meals from stored products
+- automatically calculate meal macros
+- view per-meal and per-serving nutrition data
 
 This is a learning project focused on:
 
@@ -17,22 +17,22 @@ This is a learning project focused on:
 - mobile development
 - containerized environments
 - authentication systems
-- AI/OCR integration
+- clean architecture & data modeling
 
 ---
 
 # Architecture
 
-Mobile App
+Mobile App  
 React Native (Expo)
 
-Backend API
+Backend API  
 Node.js + Fastify + TypeScript
 
-Database
+Database  
 PostgreSQL
 
-Infrastructure
+Infrastructure  
 Docker + Docker Compose
 
 Architecture flow:
@@ -43,7 +43,7 @@ Mobile App → Backend API → PostgreSQL
 
 # Current Stack
 
-Mobile
+Mobile (planned / starting)
 
 - React Native
 - Expo
@@ -70,15 +70,27 @@ Dev Infrastructure
 
 mealbase/
 │
+├ .devcontainer/
 ├ docker-compose.yml
-├ README.md
+├ Makefile
 ├ PROJECT_CONTEXT.md
-│
-└ services/
-└ api/
-├ package.json
-├ src/
-│ └ index.ts
+├ README.md
+├ requests.http
+├ services/
+│ └ api/
+│ ├ package.json
+│ ├ src/
+│ │ ├ index.ts
+│ │ ├ db.ts
+│ │ ├ authMiddleware.ts
+│ │ ├ routes/
+│ │ │ ├ auth.ts
+│ │ │ ├ profile.ts
+│ │ │ ├ products.ts
+│ │ │ └ meals.ts
+│ │ └ utils/
+│ │ ├ mealsNormalization.ts
+│ │ └ mealsHelpers.ts
 
 ---
 
@@ -86,15 +98,15 @@ mealbase/
 
 Services:
 
-mealbase-api
+mealbase-api  
 Node.js backend
 
-mealbase-db
+mealbase-db  
 PostgreSQL database
 
 Important containers:
 
-mealbase-api
+mealbase-api  
 mealbase-db
 
 Health endpoint:
@@ -111,76 +123,178 @@ Expected response:
 
 ---
 
-# Git Workflow
+# Backend Features (Current State)
 
-main
-stable branch
+## Authentication
 
-feature/\*
-feature branches
+- Register (POST /auth/register)
+- Login (POST /auth/login)
+- JWT-based authentication
+- authMiddleware for protected routes
 
-Example:
+---
 
-feature/auth
-feature/products
-feature/dishes
-feature/ocr
+## Products
 
-Current branch:
+- Create product
+- Get all products
+- Get product by id
+- Update product
+- Delete product
 
-feature/auth
+Each product:
+
+- belongs to user (user_id)
+- stores macros per 100g
+
+---
+
+## Meals
+
+Full CRUD implemented:
+
+- POST /meals
+- GET /meals
+- GET /meals/:id
+- PUT /meals/:id
+- DELETE /meals/:id
+
+Meal features:
+
+- meals consist of multiple products
+- each item has grams
+- automatic macro calculation:
+  - protein
+  - carbs
+  - fat
+  - calories
+- total macros per meal
+- per-serving macros
+
+---
+
+## Data Handling Improvements
+
+Implemented:
+
+- normalization layer (DB → API format)
+  - snake_case → camelCase
+- consistent response structure
+- macro calculation logic
+- validation (schema + manual checks)
+
+---
+
+# Git Workflow (Updated)
+
+Branches:
+
+main  
+→ stable, production-like state
+
+develop  
+→ integration branch for new features
+
+feature/\*  
+→ individual features
+
+Examples:
+
+- feature/auth
+- feature/products
+- feature/meals
+- feature/frontend-mvp
+
+Flow:
+
+feature → develop → main
 
 ---
 
 # Current Progress
 
-Completed:
+## Backend
 
-- Dockerized backend setup
-- PostgreSQL container running
-- Fastify API server running
-- /health endpoint implemented
-- Git repository configured
-- GitHub repository created
-- GitHub SSH authentication configured
-- VS Code Git integration fixed
-- README created
-- Backend and DB now runs in dev container
+✅ Completed:
+
+- Dockerized backend
+- PostgreSQL integration
+- Authentication system (JWT)
+- Products CRUD
+- Meals CRUD
+- Macro calculations
+- Data normalization layer
+- Refactor of meals logic (helpers + utils)
+- Clean API responses
+
+---
+
+## Frontend
+
+🚧 Starting:
+
+- Frontend MVP (React + Vite)
+- API integration (meals, auth)
+- Basic UI (list + create + view)
 
 ---
 
 # Next Steps
 
-Authentication system:
+## Frontend MVP
 
-1. Create users table
-2. Install bcrypt
-3. Install jsonwebtoken
-4. Implement POST /auth/register
-5. Implement POST /auth/login
-6. Add JWT middleware
+1. Setup React (Vite)
+2. Implement auth (login + token storage)
+3. Meals list page
+4. Single meal page
+5. Create meal form
 
-After auth:
+---
 
-products CRUD
-dishes builder
-macro calculations
-OCR / AI food label scanning
-mobile app UI
+## Backend (later improvements)
+
+- Further refactoring (split large route files)
+- Shared helpers for calculations
+- Better typing (remove any)
+- Validation improvements
+
+---
+
+## Future Features
+
+- OCR / AI food label scanning
+- Mobile UI (React Native)
+- Image upload
+- Search & filtering
+- Favorites / templates
 
 ---
 
 # Important Notes
 
-Passwords will be stored using:
+Authentication:
 
-bcrypt (password hashing)
+- JWT (stateless)
+- Authorization header required
 
-Authentication will use:
+Passwords:
 
-JWT (JSON Web Tokens)
+- hashed using bcrypt
 
-Each resource will belong to a user:
+Data ownership:
 
-products.user_id
-dishes.user_id
+- all resources scoped by user_id
+
+Database conventions:
+
+- snake_case in DB
+- camelCase in API
+
+---
+
+# Project Status
+
+Current state:
+
+Backend is fully functional and stable  
+Ready for frontend integration (MVP phase)

@@ -24,7 +24,12 @@ services:
       - db
     env_file:
       - .env
-    command: ["bash", "-lc", "npm install && npx tsx watch src/index.ts"]
+    command:
+      [
+        "bash",
+        "-lc",
+        "npm install && npx nodemon --legacy-watch --watch src --ext ts --exec 'npx tsx src/index.ts'",
+      ]
 
 volumes:
   postgres_data:

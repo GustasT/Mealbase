@@ -6,8 +6,8 @@ POST http://localhost:3001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
-  "password": "secret123"
+  "email": "ponas.jonas@gmail.com",
+  "password": "admin123"
 }
 
 ### Login success
@@ -15,13 +15,13 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
-  "password": "secret123"
+  "email": "ponas.jonas@gmail.com",
+  "password": "admin123"
 }
 
 ### Profile
 GET http://localhost:3001/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2U4YzY2MS05YjJkLTQ2NjgtODUyMC1kZDdkYjhlNmNiNGUiLCJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3NzMxNTUzMTQsImV4cCI6MTc3Mzc2MDExNH0.Si-u74KyUvdGkqErD9WfBSDr2ibO3Am1RybfDqOplt4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
 
 ### Profile without token
 GET http://localhost:3001/profile
@@ -31,7 +31,7 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
+  "email": "poas.jonas@mail.com",
   "password": "wrongpass"
 }
 
@@ -42,4 +42,77 @@ Content-Type: application/json
 {
   "email": "unknown@mail.com",
   "password": "secret123"
+}
+
+
+### Add product
+POST http://localhost:3001/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+{
+  "name": "Ryziai",
+  "protein": 8,
+  "carbs": 43,
+  "fat": 2
+}
+
+### Get products
+GET http://localhost:3001/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Get product by id
+GET http://localhost:3001/products/72c3773a-37d1-4206-b3d9-63a9a16c4dac
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Delete product by id
+DELETE http://localhost:3001/products/5caf4e84-cf53-457a-97aa-031e996f54e5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Update product by id
+PUT http://localhost:3001/products/a556cc12-d89b-4e56-bd90-9759f734307f
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+{
+  "name": "Grikiai Update",
+  "protein": 12,
+  "carbs": 38,
+  "fat": 0.5
+}
+
+### Add a meal
+POST http://localhost:3001/meals
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+{
+  "name": "Grikiai su daktariskos desra",
+  "description": "Isiberti grikiu i sauja, atsikasti desros guzo ir uzryti grikiais",
+  "servings" : 1,
+  "items": [{"productId": "a556cc12-d89b-4e56-bd90-9759f734307f", "grams":30},{"productId": "72c3773a-37d1-4206-b3d9-63a9a16c4dac", "grams": 20}]
+}
+
+### Get meals
+GET http://localhost:3001/meals
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Get meal by id
+GET http://localhost:3001/meals/e248cb58-fc82-4f57-a8c4-bea07844233d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Delete meal by id
+DELETE http://localhost:3001/meals/e248cb58-fc82-4f57-a8c4-bea07844233d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MGM0NTZmNi1kNWI4LTQxNzQtODEwMi1hNGU2YjRhODc4YzUiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NDYwNjk0OSwiZXhwIjoxNzc1MjExNzQ5fQ.PkPozucM4Yk1igGJv5nu3bPOcra_D0DBMdAPtycTVTI
+
+### Edit a meal
+PUT http://localhost:3001/meals/1a7df28a-4985-47fb-be14-b6c8e1a1dba5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNDlhMzFjMC01MDhmLTRmYWEtOTI0MC1iN2JiMzQ4NGU0NzciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NDI2OTk3NywiZXhwIjoxNzc0ODc0Nzc3fQ.i0kdDWv3FOLabPS7lD-Exd9VopOIYLqOnGOSBcWVS60
+
+{
+  "name": "Gaidiena su makaronais",
+  "description": "Isvirti makaronus ir pateiktu su smulkiais gabaliukais pjaustyta gaidiena",
+  "servings" : 3,
+  "items": [{"productId": "560e2ee6-dbf5-493f-88fc-215ffd83b9f0", "grams":200},{"productId": "c05b3c91-13ab-4e4e-9780-fdb3652e3796", "grams": 150}]
 }

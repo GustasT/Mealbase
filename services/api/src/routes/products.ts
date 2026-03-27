@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db";
 import { authMiddleware, JwtPayload } from "../authMiddleware";
+import { normalizeProductRow } from "../utils/productsNormalization";
 
 export async function productsRoute(app: FastifyInstance) {
   app.post(
@@ -50,7 +51,7 @@ export async function productsRoute(app: FastifyInstance) {
           [user.userId, name.trim(), protein, carbs, fat],
         );
 
-        const product = result.rows[0];
+        const product = normalizeProductRow(result.rows[0]);
 
         return reply.status(201).send({
           ok: true,
@@ -58,9 +59,9 @@ export async function productsRoute(app: FastifyInstance) {
             ...product,
             calories: Number(
               (
-                Number(product.protein) * 4 +
-                Number(product.carbs) * 4 +
-                Number(product.fat) * 9
+                product.protein * 4 +
+                product.carbs * 4 +
+                product.fat * 9
               ).toFixed(0),
             ),
           },
@@ -95,16 +96,20 @@ export async function productsRoute(app: FastifyInstance) {
           [user.userId],
         );
 
-        const products = result.rows.map((product) => ({
-          ...product,
-          calories: Number(
-            (
-              Number(product.protein) * 4 +
-              Number(product.carbs) * 4 +
-              Number(product.fat) * 9
-            ).toFixed(0),
-          ),
-        }));
+        const products = result.rows.map((row) => {
+          const product = normalizeProductRow(row);
+
+          return {
+            ...product,
+            calories: Number(
+              (
+                product.protein * 4 +
+                product.carbs * 4 +
+                product.fat * 9
+              ).toFixed(0),
+            ),
+          };
+        });
 
         return reply.send({
           ok: true,
@@ -131,7 +136,7 @@ export async function productsRoute(app: FastifyInstance) {
       const { id } = request.params as { id: string };
 
       try {
-        const result = await db.query(
+        const rawProductResult = await db.query(
           `
           SELECT id, user_id, name, protein, carbs, fat, created_at
           FROM products
@@ -140,14 +145,16 @@ export async function productsRoute(app: FastifyInstance) {
           [user.userId, id],
         );
 
-        const product = result.rows[0];
+        const rawProduct = rawProductResult.rows[0];
 
-        if (!product) {
+        if (!rawProduct) {
           return reply.status(404).send({
             ok: false,
             error: "Product not found",
           });
         }
+
+        const product = normalizeProductRow(rawProduct);
 
         return reply.send({
           ok: true,
@@ -255,7 +262,7 @@ export async function productsRoute(app: FastifyInstance) {
       }
 
       try {
-        const result = await db.query(
+        const rawProductResult = await db.query(
           `
           UPDATE products
           SET name = $3, protein = $4, carbs = $5, fat = $6
@@ -265,13 +272,15 @@ export async function productsRoute(app: FastifyInstance) {
           [user.userId, id, name.trim(), protein, carbs, fat],
         );
 
-        const product = result.rows[0];
+        const rawProduct = rawProductResult.rows[0];
 
-        if (!product) {
+        if (!rawProduct) {
           return reply.status(404).send({
             ok: false,
           });
         }
+
+        const product = normalizeProductRow(rawProduct);
 
         return reply.status(200).send({
           ok: true,

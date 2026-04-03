@@ -23,7 +23,10 @@ This is a learning project focused on:
 
 # Architecture
 
-Mobile App  
+Web Frontend MVP
+React
+
+Mobile App
 React Native (Expo)
 
 Backend API  
@@ -226,6 +229,7 @@ feature → develop → main
 - Data normalization layer
 - Refactor of meals logic (helpers + utils)
 - Clean API responses
+- DB migration and seed
 
 ---
 
@@ -233,13 +237,17 @@ feature → develop → main
 
 🚧 Starting:
 
-- Frontend MVP (React + Vite)
+- Web Frontend MVP (React + Vite)
 - API integration (meals, auth)
 - Basic UI (list + create + view)
 
 ---
 
 # Next Steps
+
+- API testing with POSTMAN
+
+---
 
 ## Frontend MVP
 
@@ -262,7 +270,8 @@ feature → develop → main
 
 ## Future Features
 
-- OCR / AI food label scanning
+- Label scanning and data fetching from Open Food Facts
+- OCR / AI food label scanning as fallback
 - Mobile UI (React Native)
 - Image upload
 - Search & filtering

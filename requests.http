@@ -21,8 +21,7 @@ Content-Type: application/json
 
 ### Profile
 GET http://localhost:3001/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YTczYmMzOC1iYzE3LTRiMTgtOWI1Zi0wMjM3MGQ2YzRkZDMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzUyMjEzNDEsImV4cCI6MTc3NTgyNjE0MX0.QVUkMx2r5pUh5eA-6aV-J5t-PdG8Fbb40lUWSUjhDkA
 ### Profile without token
 GET http://localhost:3001/profile
 

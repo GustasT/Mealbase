@@ -20,6 +20,12 @@ The system consists of three main parts:
 
 ## Tech Stack
 
+### Web-MVP
+
+- React
+- Vite
+- Typescript
+
 ### Mobile
 
 - React Native
@@ -54,9 +60,15 @@ From the project root:
 docker compose up
 ```
 
+### Migrate database schema and populate it from seed
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
 ## Planned features
 
-- JWT authentication
-- Food label scanning using OCR
-- Data processing using AI
+- Food label scanning and fetching info from Open Food Facts
+- Scanning with OCR and Data processing using AI as fallback
 - Mobile UI

@@ -4,6 +4,8 @@ import { authMiddleware, JwtPayload } from "../authMiddleware";
 import { normalizeProductRow } from "../utils/productsNormalization";
 
 export async function productsRoute(app: FastifyInstance) {
+  // ADD a product
+
   app.post(
     "/products",
     {
@@ -211,8 +213,22 @@ export async function productsRoute(app: FastifyInstance) {
         return reply.send({
           ok: true,
         });
-      } catch (err) {
-        console.error("DELETE PRODUCT ERROR:", err);
+      } catch (err: unknown) {
+        const error = err as {
+          code?: string;
+          constraint?: string;
+        };
+
+        if (
+          error.code === "23001" &&
+          error.constraint === "meal_products_product_id_fkey"
+        ) {
+          return reply.status(409).send({
+            ok: false,
+            error: "Cannot delete product because it is used in meals",
+          });
+        }
+
         app.log.error(err);
 
         return reply.status(500).send({
@@ -223,6 +239,7 @@ export async function productsRoute(app: FastifyInstance) {
     },
   );
 
+  // UPDATE product
   app.put(
     "/products/:id",
     {

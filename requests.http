@@ -15,8 +15,8 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-  "email": "ponas.jonas@gmail.com",
-  "password": "admin123"
+  "email": "test@example.com",
+  "password": "test1234"
 }
 
 ### Profile
@@ -59,18 +59,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjO
 
 ### Get products
 GET http://localhost:3001/products
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YTczYmMzOC1iYzE3LTRiMTgtOWI1Zi0wMjM3MGQ2YzRkZDMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzUyMTgyMTEsImV4cCI6MTc3NTgyMzAxMX0.9nQhxUPuyBad8A76bY7dFlQRrguIIeSPDNyNWYKw00A
 
 ### Get product by id
 GET http://localhost:3001/products/8dd06440-59dc-4d8e-afd0-a2c4b4c97f83
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
 
 ### Delete product by id
-DELETE http://localhost:3001/products/4b8b933b-551a-44e7-90eb-0270117c166e
+DELETE http://localhost:3001/products/f1c72b45-f427-417c-9a89-cd12556eb837
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
 
 ### Update product by id
-PUT http://localhost:3001/products/8ca6cebe-be8e-43fa-92cb-c0255a6093fe
+PUT http://localhost:3001/products/e9797b4f-6026-4e84-bd9d-678d1491732b
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
 
@@ -90,19 +90,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjO
   "name": "Mesa su updeitintais ryziais",
   "description": "Isvirti ryzius, iskepti mesa, pateikti saltus",
   "servings" : 3,
-  "items": [{"productId": "4b8b933b-551a-44e7-90eb-0270117c166e", "grams":300},{"productId": "8ca6cebe-be8e-43fa-92cb-c0255a6093fe", "grams": 500}]
+  "items": [{"productId": "8dd06440-59dc-4d8e-afd0-a2c4b4c97f83", "grams":300},{"productId": "f1c72b45-f427-417c-9a89-cd12556eb837", "grams": 500}]
 }
 
 ### Get meals
 GET http://localhost:3001/meals
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YTczYmMzOC1iYzE3LTRiMTgtOWI1Zi0wMjM3MGQ2YzRkZDMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzUyMTgyMTEsImV4cCI6MTc3NTgyMzAxMX0.9nQhxUPuyBad8A76bY7dFlQRrguIIeSPDNyNWYKw00A
 
 ### Get meal by id
-GET http://localhost:3001/meals/58bdd170-9ffa-4cd3-990d-d895fe98caaa
+GET http://localhost:3001/meals/6a8242b2-f77a-4160-85ab-1de859ab6b5b
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
 
 ### Delete meal by id
-DELETE http://localhost:3001/meals/58bdd170-9ffa-4cd3-990d-d895fe98caaa
+DELETE http://localhost:3001/meals/6a8242b2-f77a-4160-85ab-1de859ab6b5b
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNWJjOTQ1Yi05NzA3LTQwNGQtOWM3NS0yZTE3MjJiNWE5YzIiLCJlbWFpbCI6InBvbmFzLmpvbmFzQGdtYWlsLmNvbSIsImlhdCI6MTc3NTE0NDMyNCwiZXhwIjoxNzc1NzQ5MTI0fQ.rPEuXryZSQkYTpR-IPiuTXriqIdKWC8dR9i1SOXYHuM
 
 ### Edit a meal

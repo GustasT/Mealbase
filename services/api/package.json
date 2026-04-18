@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:migrate": "node -r dotenv/config node_modules/.bin/node-pg-migrate up --migration-file-language sql --migrations-dir migrations",
+    "db:down": "node -r dotenv/config node_modules/.bin/node-pg-migrate down --migration-file-language sql --migrations-dir migrations",
+    "db:create": "node -r dotenv/config node_modules/.bin/node-pg-migrate create --migration-file-language sql --migrations-dir migrations",
+    "db:seed": "node -r dotenv/config node_modules/.bin/tsx seeds/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +26,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.1",
     "@types/pg": "^8.18.0",
+    "node-pg-migrate": "^8.0.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }

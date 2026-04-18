@@ -122,6 +122,8 @@ export async function mealsRoute(app: FastifyInstance) {
         const rawMeal = mealResult.rows[0];
         const meal = normalizeMealRow(rawMeal);
 
+        // Sukuriam meal_products
+
         for (const item of items) {
           await client.query(
             `
@@ -486,6 +488,8 @@ export async function mealsRoute(app: FastifyInstance) {
 
         const rawMeal = mealResult.rows[0];
         const meal = normalizeMealRow(rawMeal);
+
+        // Updeitinam meal_products aka is pradziu istrinam poto pridedam isnaujo
 
         await client.query(
           `

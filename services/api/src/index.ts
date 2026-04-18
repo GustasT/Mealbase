@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { db } from "./db";
 import { profileRoute } from "./routes/profile";
 import { authRoute } from "./routes/auth";
@@ -7,6 +8,10 @@ import { mealsRoute } from "./routes/meals";
 
 const app = Fastify();
 const JWT_SECRET = process.env.JWT_SECRET!;
+
+app.register(cors, {
+  origin: "http://localhost:5173",
+});
 
 app.get("/health", async () => {
   try {

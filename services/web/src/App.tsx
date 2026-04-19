@@ -2,6 +2,7 @@ import { Link, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MealsPage from "./pages/MealsPage";
 import ProductsPage from "./pages/ProductsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -23,8 +24,22 @@ function App() {
       <main className="mx-auto max-w-5xl px-6 py-8">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/meals" element={<MealsPage />} />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route
+            path="/meals"
+            element={
+              <ProtectedRoute>
+                <MealsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                <ProductsPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<MealsPage />} />
         </Routes>
       </main>

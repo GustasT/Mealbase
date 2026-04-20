@@ -1,4 +1,3 @@
-import { api } from "./client";
 export type Meal = {
   id: string;
   userId: string;
@@ -29,11 +28,23 @@ export type Meal = {
   };
 };
 
-type GetMealsResponse = {
+type MealsResponse = {
   ok: true;
   meals: Meal[];
 };
 
-export async function getMeals() {
-  return api<GetMealsResponse>("/meals");
+export async function getMeals(token: string): Promise<MealsResponse> {
+  const response = await fetch("http://localhost:3001/meals", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Meals not found");
+  }
+
+  return data;
 }

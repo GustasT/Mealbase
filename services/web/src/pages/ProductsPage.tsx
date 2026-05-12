@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { createProduct, getProducts, type Product } from "../api/products";
+import {
+  createProduct,
+  deleteProduct,
+  getProducts,
+  type Product,
+} from "../api/products";
 
 export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,6 +16,7 @@ export default function ProductsPage() {
   const [fat, setFat] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState("");
 
   async function loadProducts() {
     const token = localStorage.getItem("token");
@@ -70,6 +76,31 @@ export default function ProductsPage() {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleDelete(productId: string) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("Missing authentication token");
+      return;
+    }
+
+    setDeletingProductId(productId);
+    setError("");
+
+    try {
+      await deleteProduct(token, productId);
+      await loadProducts();
+    } catch (deleteError) {
+      if (deleteError instanceof Error) {
+        setError(deleteError.message);
+      } else {
+        setError("Failed to delete product");
+      }
+    } finally {
+      setDeletingProductId("");
     }
   }
 
@@ -148,7 +179,7 @@ export default function ProductsPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-4 rounded-md bg-white px-4 py-2 font-medium text-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 cursor-pointer rounded-md bg-white px-4 py-2 font-medium text-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "Creating..." : "Create product"}
         </button>
@@ -164,15 +195,26 @@ export default function ProductsPage() {
             key={product.id}
             className="p-4 border rounded-lg bg-zinc-900 border-zinc-700"
           >
-            <div>
-              <p className="font-bold">{product.name}</p>
-              <p>protein: {product.protein}</p>
-              <p>carbs: {product.carbs}</p>
-              <p>fat: {product.fat}</p>
-              <p>calories: {product.calories}</p>
-              <p className="text-sm text-gray-600">
-                created at: {product.createdAt}
-              </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-bold">{product.name}</p>
+                <p>protein: {product.protein}</p>
+                <p>carbs: {product.carbs}</p>
+                <p>fat: {product.fat}</p>
+                <p>calories: {product.calories}</p>
+                <p className="text-sm text-gray-600">
+                  created at: {product.createdAt}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleDelete(product.id)}
+                disabled={deletingProductId === product.id}
+                className="cursor-pointer rounded-md border border-red-700 px-3 py-2 text-sm text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deletingProductId === product.id ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         ))}

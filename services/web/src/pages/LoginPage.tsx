@@ -34,7 +34,9 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="cursor-pointer">
+          Login
+        </button>
       </form>
     </>
   );

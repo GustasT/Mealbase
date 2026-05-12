@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createMeal, getMeals, type Meal } from "../api/meals";
+import { createMeal, deleteMeal, getMeals, type Meal } from "../api/meals";
 import { getProducts, type Product } from "../api/products";
 
 type MealItemForm = {
@@ -20,6 +20,7 @@ export default function MealsPage() {
   ]);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingMealId, setDeletingMealId] = useState("");
 
   async function loadMeals() {
     const token = localStorage.getItem("token");
@@ -136,6 +137,31 @@ export default function MealsPage() {
     }
   }
 
+  async function handleDelete(mealId: string) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("Missing authentication token");
+      return;
+    }
+
+    setDeletingMealId(mealId);
+    setError("");
+
+    try {
+      await deleteMeal(token, mealId);
+      await loadMeals();
+    } catch (deleteError) {
+      if (deleteError instanceof Error) {
+        setError(deleteError.message);
+      } else {
+        setError("Failed to delete meal");
+      }
+    } finally {
+      setDeletingMealId("");
+    }
+  }
+
   if (isLoading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-white">{error}</div>;
 
@@ -191,7 +217,7 @@ export default function MealsPage() {
             <button
               type="button"
               onClick={addItemRow}
-              className="rounded-md border border-zinc-700 px-3 py-2 text-sm"
+              className="cursor-pointer rounded-md border border-zinc-700 px-3 py-2 text-sm"
             >
               Add item
             </button>
@@ -241,7 +267,7 @@ export default function MealsPage() {
                     type="button"
                     onClick={() => removeItemRow(index)}
                     disabled={items.length === 1}
-                    className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full cursor-pointer rounded-md border border-zinc-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Remove
                   </button>
@@ -258,7 +284,7 @@ export default function MealsPage() {
         <button
           type="submit"
           disabled={isSubmitting || products.length === 0}
-          className="mt-4 rounded-md bg-white px-4 py-2 font-medium text-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 cursor-pointer rounded-md bg-white px-4 py-2 font-medium text-zinc-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "Creating..." : "Create meal"}
         </button>
@@ -278,23 +304,34 @@ export default function MealsPage() {
             key={meal.id}
             className="p-4 border rounded-lg bg-zinc-900 border-zinc-700"
           >
-            <div>
-              <p className="font-bold">{meal.name}</p>
-              <p>servings: {meal.servings}</p>
-              <p>protein: {meal.perServing.protein}</p>
-              <p>carbs: {meal.perServing.carbs}</p>
-              <p>fat: {meal.perServing.fat}</p>
-              <p>calories: {meal.perServing.calories}</p>
-              <p className="text-sm text-gray-600">
-                created at: {meal.createdAt}
-              </p>
-              {meal.items.map((item) => (
-                <div key={item.productId}>
-                  <p>
-                    {item.grams}g {item.name}
-                  </p>
-                </div>
-              ))}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-bold">{meal.name}</p>
+                <p>servings: {meal.servings}</p>
+                <p>protein: {meal.perServing.protein}</p>
+                <p>carbs: {meal.perServing.carbs}</p>
+                <p>fat: {meal.perServing.fat}</p>
+                <p>calories: {meal.perServing.calories}</p>
+                <p className="text-sm text-gray-600">
+                  created at: {meal.createdAt}
+                </p>
+                {meal.items.map((item) => (
+                  <div key={item.productId}>
+                    <p>
+                      {item.grams}g {item.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleDelete(meal.id)}
+                disabled={deletingMealId === meal.id}
+                className="cursor-pointer rounded-md border border-red-700 px-3 py-2 text-sm text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deletingMealId === meal.id ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         ))}

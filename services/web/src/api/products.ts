@@ -26,6 +26,10 @@ type CreateProductResponse = {
   product: Product;
 };
 
+type DeleteProductResponse = {
+  ok: true;
+};
+
 export async function getProducts(token: string): Promise<ProductsResponse> {
   const response = await fetch("http://localhost:3001/products", {
     method: "GET",
@@ -59,6 +63,26 @@ export async function createProduct(
 
   if (!response.ok) {
     throw new Error(data.error || "Failed to create product");
+  }
+
+  return data;
+}
+
+export async function deleteProduct(
+  token: string,
+  productId: string,
+): Promise<DeleteProductResponse> {
+  const response = await fetch(`http://localhost:3001/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to delete product");
   }
 
   return data;

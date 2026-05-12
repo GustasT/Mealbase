@@ -48,6 +48,10 @@ type CreateMealResponse = {
   meal: Meal;
 };
 
+type DeleteMealResponse = {
+  ok: true;
+};
+
 export async function getMeals(token: string): Promise<MealsResponse> {
   const response = await fetch("http://localhost:3001/meals", {
     method: "GET",
@@ -81,6 +85,26 @@ export async function createMeal(
 
   if (!response.ok) {
     throw new Error(data.error || "Failed to create meal");
+  }
+
+  return data;
+}
+
+export async function deleteMeal(
+  token: string,
+  mealId: string,
+): Promise<DeleteMealResponse> {
+  const response = await fetch(`http://localhost:3001/meals/${mealId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to delete meal");
   }
 
   return data;

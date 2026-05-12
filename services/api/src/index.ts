@@ -11,6 +11,8 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 app.register(cors, {
   origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 });
 
 app.get("/health", async () => {
